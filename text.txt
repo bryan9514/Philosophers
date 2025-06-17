@@ -1,3 +1,4 @@
+
 🧠 Philosophers_42
 ¿De qué trata el proyecto?
 El problema de los filósofos comensales es un clásico en informática que reta a los programadores a diseñar una solución donde varios filósofos funcionen sin causar un deadlock, siendo cada filósofo un hilo independiente.
