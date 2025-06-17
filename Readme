@@ -1,0 +1,106 @@
+🧠 Philosophers_42
+¿De qué trata el proyecto?
+El problema de los filósofos comensales es un clásico en informática que reta a los programadores a diseñar una solución donde varios filósofos funcionen sin causar un deadlock, siendo cada filósofo un hilo independiente.
+
+¿Qué he aprendido con este proyecto?
+Trabajar con múltiples hilos fue algo interesante y nuevo para mí. Aprendí a trabajar con hilos que comparten memoria y se ejecutan al mismo tiempo. Me enseñó la importancia de usar mutexes para proteger las variables compartidas contra condiciones de carrera (data races).
+
+🛠️ Instrucciones
+Entra a la carpeta philo o philo_bonus
+
+Ejecuta: make
+
+Para ejecutar philo:
+
+bash
+Copiar
+Editar
+./philo 4 410 200 200 5
+4 – número de filósofos
+
+410 – tiempo para morir (ms)
+
+200 – tiempo para comer (ms)
+
+200 – tiempo para dormir (ms)
+
+5 – número de comidas hasta terminar (opcional)
+
+👉 También puedes ejecutar sin el último parámetro:
+./philo 4 410 200 200
+
+Para ejecutar philo_bonus:
+
+bash
+Copiar
+Editar
+./philo_bonus 4 410 200 200 5
+Con los mismos significados.
+
+🧰 Funciones utilizadas
+🟩 Parte obligatoria:
+pthread_create() – Crea un nuevo hilo.
+
+pthread_join() – Espera que un hilo termine (evita zombis).
+
+pthread_mutex_init() – Inicializa un mutex.
+
+pthread_mutex_destroy() – Destruye un mutex.
+
+pthread_mutex_lock() – Bloquea un mutex.
+
+pthread_mutex_unlock() – Desbloquea un mutex.
+
+usleep() – Pausa el hilo en microsegundos.
+
+gettimeofday() – Devuelve el tiempo en microsegundos desde 1970.
+
+malloc() – Asigna memoria en el heap.
+
+free() – Libera memoria del heap.
+
+printf() – Muestra mensajes en pantalla.
+
+🟦 Parte bonus:
+fork() – Crea un nuevo proceso.
+
+exit() – Finaliza el proceso.
+
+waitpid() – Espera a que un proceso termine.
+
+pthread_create() – Crea un hilo.
+
+pthread_join() – Espera que un hilo termine.
+
+sem_open() – Crea un semáforo.
+
+sem_close() – Cierra un semáforo.
+
+sem_wait() – Espera hasta que el semáforo esté disponible (–1).
+
+sem_unlink() – Borra un semáforo después de finalizar.
+
+sem_post() – Libera un semáforo (+1).
+
+usleep() – Pausa en microsegundos.
+
+gettimeofday() – Tiempo desde 1970.
+
+malloc() – Reserva memoria.
+
+free() – Libera memoria.
+
+printf() – Imprime mensajes.
+
+📚 Recursos recomendados
+Te recomiendo ver esta lista de reproducción y repetir los pasos con el instructor.
+
+Philosophers Visualizer te ayudará a entender cómo se comporta tu programa.
+
+
+
+📽️ Explicación en video
+Para una explicación detallada, mira mi video explicativo.
+
+
+
