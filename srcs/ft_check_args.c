@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 13:29:25 by brturcio          #+#    #+#             */
-/*   Updated: 2025/06/19 14:39:39 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/06/19 15:05:24 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static int	ft_isspace(char c)
 
 static int	ft_is_digit(char c)
 {
-	if (c >= '0' && c <= '9')
+	if ((c >= '0' && c <= '9') || c == '+')
 		return (1);
 	return (0);
 }
