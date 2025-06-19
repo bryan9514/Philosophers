@@ -6,7 +6,7 @@
 #    By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/17 06:47:34 by brturcio          #+#    #+#              #
-#    Updated: 2025/06/17 07:42:34 by brturcio         ###   ########.fr        #
+#    Updated: 2025/06/19 10:57:51 by brturcio         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,11 +22,14 @@ DIR_OBJS	:= objs
 
 # ==================== FILES ====================
 SRCS		:= 	$(DIR_SRCS)/main.c \
+				$(DIR_SRCS)/ft_init_the_struct.c \
+				$(DIR_SRCS)/ft_control_free_msjs_errors.c
 
 
 
 OBJS		:=	$(DIR_OBJS)/main.o \
-
+				$(DIR_OBJS)/ft_init_the_struct.o \
+				$(DIR_OBJS)/ft_control_free_msjs_errors.o
 
 # ==================== RULES ====================
 all : $(NAME)

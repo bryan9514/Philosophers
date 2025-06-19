@@ -1,35 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_utils_inict_struct.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/17 07:41:44 by brturcio          #+#    #+#             */
-/*   Updated: 2025/06/19 11:44:20 by brturcio         ###   ########.fr       */
+/*   Created: 2025/06/19 12:06:51 by brturcio          #+#    #+#             */
+/*   Updated: 2025/06/19 12:12:40 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-/*
- * correct input ./philo 4 800 200 200 [5]
- *                  [0] [1][2] [3] [4] [5]
-*/
-int	main(int ac, char **av)
+
+int	ft_isspace(char c)
 {
-	t_info_philo	*philo = NULL;
-	(void)av;
-	if (ac == 6 || ac == 5)
+	if (c >= '\t' && c <= '\f')
+		return (1);
+	return (0)
+}
+
+
+long	ft_atol(char *str)
+{
+	int		i;
+	long	num;
+	int		sing;
+
+	i = 0;
+	num = 0;
+	sing = 0;
+	while (ft_isspace(str[i]))
+		i++;
+	if (str[i] == '-' || str[i] == '+')
 	{
-		philo = init_the_structs(av);
-		printf("funciona\n");
+		if (str[i] == '-')
 	}
-	else
-	{
-		printf(R"\t\t\t❌ Incorrect input ❌\n " "The sintaxys is:"RST \
-W" ./philo 4 800 200 200"RST R"  or  "RST \
-W"./philo 4 800 200 200 5\n"RST);
-	}
-	free_structs(philo);
-	return (0);
+
 }
