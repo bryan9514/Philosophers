@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 07:41:44 by brturcio          #+#    #+#             */
-/*   Updated: 2025/06/19 11:44:20 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/06/19 14:44:20 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,19 +17,16 @@
 */
 int	main(int ac, char **av)
 {
-	t_info_philo	*philo = NULL;
-	(void)av;
-	if (ac == 6 || ac == 5)
+	t_info_philo	*philo;
+
+	philo = NULL;
+	if (!(ac == 6 || ac == 5) || ft_check_args(ac, av))
 	{
-		philo = init_the_structs(av);
-		printf("funciona\n");
+		ft_error_exit(R"\t\t\t❌ Incorrect input ❌\n " "The sintaxys is:"RST \
+					 W" ./philo 4 800 200 200"RST R"  or  "RST \
+					 W"./philo 4 800 200 200 5\n"RST);
 	}
-	else
-	{
-		printf(R"\t\t\t❌ Incorrect input ❌\n " "The sintaxys is:"RST \
-W" ./philo 4 800 200 200"RST R"  or  "RST \
-W"./philo 4 800 200 200 5\n"RST);
-	}
+	philo = init_the_structs(av);
 	free_structs(philo);
 	return (0);
 }

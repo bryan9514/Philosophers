@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 07:44:14 by brturcio          #+#    #+#             */
-/*   Updated: 2025/06/19 11:45:04 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/06/19 14:47:09 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #include <sys/time.h>
 #include <pthread.h>
 #include <stdbool.h>
+#include <limits.h>
 
 # define BR		"\e[0;90m"
 # define R		"\e[0;91m"
@@ -52,7 +53,17 @@ typedef struct	s_info_philo
 //****initialize the structures******/
 t_info_philo	*init_the_structs(char **av);
 
-//*****freeing memory*****/
-void			free_structs(t_info_philo *philo);
+int	ft_check_args(int ac, char **av);
+
+long	ft_atol(char *str);
+
+/*freeing memory*/
+void	free_structs(t_info_philo *philo);
+void	ft_error_exit(char *str);
+
+/***ft_utils.c***/
+
+/*for printf the errors*/
+void	ft_putstr_fd(char *s, int fd);
 
 #endif
