@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 07:44:14 by brturcio          #+#    #+#             */
-/*   Updated: 2025/06/19 14:47:09 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/06/21 10:05:22 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ typedef struct	s_info_philo
 }	t_info_philo;
 
 //****initialize the structures******/
-t_info_philo	*init_the_structs(char **av);
+int	init_the_structs(t_info_philo *philo , char **av);
 
 int	ft_check_args(int ac, char **av);
 

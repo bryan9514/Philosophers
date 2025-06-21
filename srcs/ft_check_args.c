@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 13:29:25 by brturcio          #+#    #+#             */
-/*   Updated: 2025/06/19 15:05:24 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/06/21 10:59:21 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,14 @@
 
 static int	ft_isspace(char c)
 {
-	if (c >= '\t' && c <= '\f')
+	if ((c >= '\t' && c <= '\f') || c == ' ')
 		return (1);
 	return (0);
 }
 
-static int	ft_is_digit(char c)
+static int	ft_is_valid_character(char c)
 {
-	if ((c >= '0' && c <= '9') || c == '+')
+	if ((c >= '0' && c <= '9') || c == ' ')
 		return (1);
 	return (0);
 }
@@ -33,9 +33,14 @@ long	ft_atol(char *str)
 
 	i = 0;
 	num = 0;
+	while (ft_isspace(str[i]))
+		i++;
+	while (str[i] == '+')
+		i++;
 	while (str[i])
 	{
-		num = num * 10 + (str[i] - '0');
+		if (str[i] >= '0' && str[i] <= '9')
+			num = num * 10 + (str[i] - '0');
 		i++;
 	}
 	return (num);
@@ -60,18 +65,20 @@ int	ft_check_args(int ac, char **av)
 	while (i < ac)
 	{
 		j = 0;
-		while(av[i][j])
+		while (av[i][j])
 		{
 			while (ft_isspace(av[i][j]))
 				j++;
+			while (av[i][j] == '+')
+				j++;
 			if (av[i][j] == '-')
 				ft_error_exit("⛔ Only positive value ⛔\n");
-			if (!ft_is_digit(av[i][j]))
+			if (!ft_is_valid_character(av[i][j]))
 				ft_error_exit("⛔ Only digit ⛔\n");
 			j++;
 		}
 		if (ft_check_max(av[i]))
-				ft_error_exit("⛔ INT_MAX is the limited ⛔\n");
+			ft_error_exit("⛔ INT_MAX is the limited ⛔\n");
 		i++;
 	}
 	return (0);
