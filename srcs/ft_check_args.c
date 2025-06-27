@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 13:29:25 by brturcio          #+#    #+#             */
-/*   Updated: 2025/06/21 10:59:21 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/06/24 11:24:00 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ static int	ft_check_max(char *str)
 	long	num;
 
 	num = ft_atol(str);
-	if (num > INT_MAX)
+	if (num > INT_MAX)  // 2147483648   INT_MIN -2147483648
 		return (1);
 	return (0);
 }

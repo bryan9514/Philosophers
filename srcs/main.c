@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 07:41:44 by brturcio          #+#    #+#             */
-/*   Updated: 2025/06/21 10:58:41 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/06/27 11:26:15 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 */
 int	main(int ac, char **av)
 {
-	t_info_philo	philo;
+	t_data	philo;
 
 	if (!(ac == 6 || ac == 5) || ft_check_args(ac, av))
 	{
@@ -27,6 +27,7 @@ int	main(int ac, char **av)
 W" ./philo 4 800 200 200"RST R "  or  "RST \
 W"./philo 4 800 200 200 5\n"RST);
 	}
-	init_the_structs(&philo, av);
+	ft_init_the_structs(&philo, av);
+	ft_start_routine(&philo);
 	return (0);
 }

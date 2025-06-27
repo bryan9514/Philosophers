@@ -6,13 +6,13 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 10:47:39 by brturcio          #+#    #+#             */
-/*   Updated: 2025/06/19 13:41:32 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/06/24 11:20:53 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	free_structs(t_info_philo *philo)
+void	free_structs(t_data *philo)
 {
 	if (philo)
 		free(philo);
