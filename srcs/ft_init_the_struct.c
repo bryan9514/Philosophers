@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 09:18:26 by brturcio          #+#    #+#             */
-/*   Updated: 2025/06/27 11:32:43 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/07/01 10:13:16 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,15 @@
 
 static void	ft_init_struct_philo(t_data *data)
 {
-	data->philo->id = 0;
-	data->philo->counts_meals = 0;
-	data->philo->full = false;
-	data->philo->last_meals = 0;
+	t_philo	*philo;
+
+	philo = data->philo;
+	philo->id = 0;
+	philo->counts_meals = 0;
+	philo->full = false;
+	philo->last_meals = 0;
+	philo->right_fork = ft_safe_malloc(philo->right_fork);
+	philo->left_fork = ft_safe_malloc(philo->left_fork);
 }
 
 /*
@@ -43,6 +48,8 @@ int	ft_init_the_structs(t_data *data, char **av)
 		data->nbr_limit_meals = -1;
 	data->time_simulation_start = 0;
 	data->end_simulation = false;
+	data->philo = ft_safe_malloc(data->philo);
+	data->forks = ft_safe_malloc(data->forks);
 	ft_init_struct_philo(data);
 	return (0);
 }

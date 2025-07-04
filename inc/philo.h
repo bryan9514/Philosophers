@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 07:44:14 by brturcio          #+#    #+#             */
-/*   Updated: 2025/06/27 11:24:53 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/07/01 10:09:37 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,5 +84,6 @@ void	ft_error_exit(char *str);
 
 /*for printf the errors*/
 void	ft_putstr_fd(char *s, int fd);
+void	*ft_safe_malloc(size_t bytes);
 
 #endif
