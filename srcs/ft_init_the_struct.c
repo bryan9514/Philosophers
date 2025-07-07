@@ -6,11 +6,24 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 09:18:26 by brturcio          #+#    #+#             */
-/*   Updated: 2025/06/19 14:49:04 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/07/04 19:40:39 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+static void	ft_init_struct_philo(t_data *data)
+{
+	t_philo	*philo;
+
+	philo = data->philo;
+	philo->id = 0;
+	philo->counts_meals = 0;
+	philo->full = false;
+	philo->last_meals = 0;
+	philo->right_fork = ft_safe_malloc(sizeof(t_philo));
+	philo->left_fork = ft_safe_malloc(sizeof(t_philo));
+}
 
 /*
  * Initialization only of the **info philo structure**
@@ -18,23 +31,25 @@
  * ⚠️ If more fields are added in the future, update this section accordingly.
  * contains the input  ./philo 4 400 200 200
 */
-t_info_philo	*init_the_structs(char **av)
+int	ft_init_the_structs(t_data *data, char **av)
 {
-	t_info_philo	*philo;
-
-	(void)av;
-	philo = malloc(sizeof(t_info_philo));
-	if (!philo)
-		return (NULL);
-	philo->nbr_philos = ft_atol(av[1]);
-	philo->time_to_die = ft_atol(av[2]);
-	philo->time_to_eat = ft_atol(av[3]);
-	philo->time_to_sleep = ft_atol(av[4]);
+	data->nbr_philos = ft_atol(av[1]);
+	data->time_to_die = ft_atol(av[2]) * 1000;
+	data->time_to_eat = ft_atol(av[3]) * 1000;
+	data->time_to_sleep = ft_atol(av[4]) * 1000;
+	if (data->time_to_die < 100000 || data->time_to_eat < 100000 \
+|| data->time_to_sleep < 100000)
+		ft_error_exit(Y \
+"⚠️  Warning: values lower than 100ms may cause " \
+"synchronization issues. ⚠️\n" RST);
 	if (av[5])
-		philo->nbr_limit_meals = ft_atol(av[5]);
+		data->nbr_limit_meals = ft_atol(av[5]) * 1000;
 	else
-		philo->nbr_limit_meals = 0;
-	philo->time_simulation_start = 0;
-	philo->end_simulation = FALSE;
-	return(philo);
+		data->nbr_limit_meals = -1;
+	data->time_simulation_start = 0;
+	data->end_simulation = false;
+	data->philo = ft_safe_malloc(sizeof(t_data));
+	data->forks = ft_safe_malloc(sizeof(t_data));
+	ft_init_struct_philo(data);
+	return (0);
 }

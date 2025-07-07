@@ -5,53 +5,77 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/02 21:38:01 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/03 21:13:20 by brturcio         ###   ########.fr       */
+/*   Created: 2025/07/04 19:43:15 by brturcio          #+#    #+#             */
+/*   Updated: 2025/07/07 15:07:42 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include <pthread.h>
+#include <stdlib.h>
 
-typedef struct s_hilos
+void	*ft_mi_funcion(void *arg)
 {
-	int			cont;
-	pthread_t	hilo;
+	int	num;
 
-}	t_hilos;
-
-void	*mi_funcion(void *arg)
-{
-	t_hilos	cont;
-
-	cont = *(t_hilos *)arg;
-	cont++;
-	printf("Soy el hilo y el contador es : %d\n", cont);
+	num = *(int *)arg;
+	printf("This is the pthread\nand the number is : %d\n", num);
 	return (NULL);
+
 }
 
-int	main(void)
+void	*ft_safe_malloc(size_t bytes)
 {
-	int		i;
-	t_hilos	hilo[5];
+	void	*ptr;
+
+	ptr = malloc(bytes);
+	if (!ptr)
+		return (NULL);
+	return (ptr);
+}
+
+// void	ft_crear_y_ejecutar_threads(int n, void *(*func)(void *), void **args)
+// {
+// 	int			i;
+// 	pthread_t	*threads;
+
+// 	i = 0;
+// 	threads = ft_safe_malloc(sizeof(pthread_t) * n);
+// 	while (i < n)
+// 	{
+// 		if (pthread_create(&threads[i], NULL, func, args[i]) != 0)
+// 		{
+// 			perror("pthread_create");
+// 			exit(EXIT_FAILURE);
+// 		}
+// 		i++;
+// 	}
+// 	i = 0;
+// 	while (i < n)
+// 	{
+// 		pthread_join(threads[i], NULL);
+// 		i++;
+// 	}
+// 	free(threads);
+// }
+
+int	main(int ac, char **av)
+{
+	(void)ac;
+	int			num;
+	pthread_t	*hilo;
+	int			i;
 
 	i = 0;
-	while (i <= 4)
+	num = atoi(av[1]);
+	hilo = ft_safe_malloc(sizeof(pthread_t));
+	pthread_create(hilo, NULL, ft_mi_funcion, &num);
+	printf("This is the main.\n");
+	pthread_join(*hilo, NULL);
+	while (i < num)
 	{
-		if (pthread_create(&hilo[i], NULL, mi_funcion, &hilo->cont) != 0)
-		{
-			perror("Hilo no creado.\n");
-			return (1);
-		}
+		free(hilo[i]);
 		i++;
 	}
-	printf("Esto es el main\n");
-	i = 0;
-	while (i <= 4)
-	{
-		pthread_join(hilo[i], NULL);
-		i++;
-	}
-	printf("Hilo finalizado.\n");
 	return (0);
 }
