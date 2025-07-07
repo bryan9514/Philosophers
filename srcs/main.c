@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 07:41:44 by brturcio          #+#    #+#             */
-/*   Updated: 2025/06/27 11:26:15 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/07/04 19:41:27 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,6 @@ W" ./philo 4 800 200 200"RST R "  or  "RST \
 W"./philo 4 800 200 200 5\n"RST);
 	}
 	ft_init_the_structs(&philo, av);
-	ft_start_routine(&philo);
+	// ft_start_routine(&philo);
 	return (0);
 }

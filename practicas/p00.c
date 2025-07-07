@@ -1,38 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_utils.c                                         :+:      :+:    :+:   */
+/*   p00.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/19 13:16:06 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/04 19:42:22 by brturcio         ###   ########.fr       */
+/*   Created: 2025/07/04 19:43:15 by brturcio          #+#    #+#             */
+/*   Updated: 2025/07/04 19:50:37 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include <stdio.h>
+#include <pthread.h>
 
-void	ft_putstr_fd(char *s, int fd)
-{
-	int	i;
-
-	i = 0;
-	if (!s)
-		return ;
-	while (s[i] && fd >= 0)
-	{
-		write(fd, &s[i], 1);
-		i++;
-	}
-}
-
-void	*ft_safe_malloc(size_t bytes)
-{
-	void	*ptr;
-
-	(void)bytes;
-	ptr = malloc(bytes);
-	if (!ptr)
-		ft_error_exit(R "⛔🚨 Error malloc 🚨⛔\n" RST);
-	return (ptr);
-}
+int	main(void)
