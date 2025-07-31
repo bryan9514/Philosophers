@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 19:11:22 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/31 12:12:58 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/07/31 13:04:50 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void	ft_eat(t_philo *philo)
 	philo->last_meals = get_time();
 	pthread_mutex_unlock(&philo->meal_mutex);
 	print_status(philo, EAT);
-	usleep(philo->data->time_to_eat);
+	ft_usleep(philo->data->time_to_eat, philo->data);
 	pthread_mutex_lock(&philo->meal_count_mutex);
 	philo->counts_meals++;
 	pthread_mutex_unlock(&philo->meal_count_mutex);
@@ -59,7 +59,7 @@ void	ft_think(t_philo *philo)
 void	ft_sleep(t_philo *philo)
 {
 	print_status(philo, SLEEP);
-	usleep(philo->data->time_to_sleep);
+	ft_usleep(philo->data->time_to_sleep, philo->data);
 }
 
 void	*start_routine(void *arg)
@@ -68,7 +68,7 @@ void	*start_routine(void *arg)
 
 	philo = (t_philo *)arg;
 	if (philo->id % 2 == 0)
-		usleep(500);
+		ft_usleep(500 , philo->data);
 	while (!philo->data->end_rutine)
 	{
 		ft_eat(philo);

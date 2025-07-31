@@ -224,7 +224,7 @@ void	ft_putstr_fd(char *s, int fd)
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 19:08:04 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/30 15:44:04 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/07/31 11:13:47 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -250,6 +250,7 @@ void	destroy_mutexs(t_data *data)
 	}
 	pthread_mutex_destroy(&data->print);
 	pthread_mutex_destroy(&data->state_death);
+	pthread_mutex_destroy(&data->state_routine);
 }
 
 void	join_pthreads(t_data *data)
@@ -269,7 +270,7 @@ void	join_pthreads(t_data *data)
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 09:18:26 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/30 15:52:03 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/07/31 11:13:26 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -302,6 +303,7 @@ static void	init_mutex(t_data *data)
 	}
 	pthread_mutex_init(&data->print, NULL);
 	pthread_mutex_init(&data->state_death, NULL);
+	pthread_mutex_init(&data->state_routine, NULL);
 }
 
 static void	init_philo(t_data *data)
@@ -312,13 +314,9 @@ static void	init_philo(t_data *data)
 	while (i < data->nbr_philos)
 	{
 		data->philo[i].id = i + 1;
-		pthread_mutex_lock(&data->philo[i].meal_count_mutex);
 		data->philo[i].counts_meals = 0;
-		pthread_mutex_unlock(&data->philo[i].meal_count_mutex);
 		data->philo[i].full = false;
-		pthread_mutex_lock(&data->philo[i].meal_mutex);
 		data->philo[i].last_meals = get_time();
-		pthread_mutex_unlock(&data->philo[i].meal_mutex);
 		data->philo[i].left_fork = &data->forks[i];
 		data->philo[i].right_fork = &data->forks[(i + 1) % data->nbr_philos];
 		data->philo[i].data = data;
@@ -394,7 +392,7 @@ int	main(int ac, char **av)
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 13:55:28 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/31 10:57:28 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/07/31 12:12:45 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -442,12 +440,11 @@ int	check_meals(t_data *data)
 		pthread_mutex_unlock(&data->philo[i].meal_count_mutex);
 		i++;
 	}
-	i = 0;
 	if (count_meals == data->nbr_philos)
 	{
-		pthread_mutex_lock(&data->philo[i].meal_mutex);
+		pthread_mutex_lock(&data->state_routine);
 		data->end_rutine = true;
-		pthread_mutex_unlock(&data->philo[i].meal_mutex);
+		pthread_mutex_unlock(&data->state_routine);
 		return (1);
 	}
 	return (0);
@@ -562,7 +559,7 @@ int	parse_args(int ac, char **av)
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 19:11:22 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/31 11:01:08 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/07/31 12:12:58 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -628,20 +625,21 @@ void	*start_routine(void *arg)
 	while (!philo->data->end_rutine)
 	{
 		ft_eat(philo);
-		pthread_mutex_lock(&philo->data->state_death);
+		pthread_mutex_lock(&philo->data->state_routine);
 		if (philo->data->end_rutine)
 		{
-			pthread_mutex_unlock(&philo->data->state_death);
+			pthread_mutex_unlock(&philo->data->state_routine);
 			break ;
 		}
-		pthread_mutex_lock(&philo->data->state_death);
+		pthread_mutex_unlock(&philo->data->state_routine);
 		ft_sleep(philo);
+		pthread_mutex_lock(&philo->data->state_routine);
 		if (philo->data->end_rutine)
 		{
-			pthread_mutex_unlock(&philo->data->state_death);
+			pthread_mutex_unlock(&philo->data->state_routine);
 			break ;
 		}
-		pthread_mutex_unlock(&philo->data->state_death);
+		pthread_mutex_unlock(&philo->data->state_routine);
 		ft_think(philo);
 	}
 	return (NULL);
@@ -654,7 +652,7 @@ void	*start_routine(void *arg)
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 18:05:42 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/28 18:00:34 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/07/31 12:12:23 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -684,7 +682,7 @@ int	init_threads(t_data *data)
 			return (1);
 		}
 	}
-	usleep(100);
+	// ft_usleep(100);
 	if (pthread_create(&data->monitor_thread, NULL, monitor_routine, data) != 0)
 	{
 		error_create_thread(data, i, "monitor");
@@ -700,11 +698,21 @@ int	init_threads(t_data *data)
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 18:29:39 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/26 22:54:09 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/07/31 12:21:55 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+int	ft_usleep(size_t ms, )
+{
+	size_t	start;
+
+	start = get_time();
+	while ((get_time() - start) < ms)
+		usleep(100);
+	return (0);
+}
 
 long	get_time(void)
 {
@@ -723,7 +731,7 @@ long	get_time(void)
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 07:44:14 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/30 15:28:47 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/07/31 12:00:52 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -804,6 +812,7 @@ typedef struct	s_data
 	t_mtx		*forks;
 	t_mtx		print;
 	t_mtx		state_death;
+	t_mtx		state_routine;
 	t_alloc_mgr	*alloctrack;
 	pthread_t	monitor_thread;
 }	t_data;
@@ -856,6 +865,7 @@ int		init_threads(t_data *data);
 =============================================================
 */
 long	get_time(void);
+int	ft_usleep(size_t ms);
 
 
 

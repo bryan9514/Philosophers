@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 13:55:28 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/31 12:12:45 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/07/31 13:03:41 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ void	*monitor_routine(void *arg)
 			return (NULL);
 		if (check_meals(data))
 			return (NULL);
-		usleep(1000);
+		ft_usleep(1000, data);
 	}
 	return (NULL);
 }
