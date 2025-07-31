@@ -1,16 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   p00.c                                              :+:      :+:    :+:   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/04 19:43:15 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/04 19:50:37 by brturcio         ###   ########.fr       */
+/*   Created: 2025/07/25 18:29:39 by brturcio          #+#    #+#             */
+/*   Updated: 2025/07/26 22:54:09 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <pthread.h>
+#include "philo.h"
 
-int	main(void)
+long	get_time(void)
+{
+	long			start;
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	start = ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+	return (start);
+}

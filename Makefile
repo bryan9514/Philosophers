@@ -6,7 +6,7 @@
 #    By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/17 06:47:34 by brturcio          #+#    #+#              #
-#    Updated: 2025/06/27 11:20:03 by brturcio         ###   ########.fr        #
+#    Updated: 2025/07/28 14:27:37 by brturcio         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,16 +21,26 @@ DIR_SRCS	:= srcs
 DIR_OBJS	:= objs
 
 # ==================== FILES ====================
-SRCS		:=	$(DIR_SRCS)/ft_check_args.c \
-				$(DIR_SRCS)/ft_control_free_msjs_errors.c \
-				$(DIR_SRCS)/ft_init_the_struct.c \
-				$(DIR_SRCS)/ft_utils.c \
+SRCS		:=	$(DIR_SRCS)/alloc_control.c \
+				$(DIR_SRCS)/exit.c \
+				$(DIR_SRCS)/errors.c \
+				$(DIR_SRCS)/init_structs.c \
+				$(DIR_SRCS)/monitor.c \
+				$(DIR_SRCS)/parse_args.c \
+				$(DIR_SRCS)/threads.c \
+				$(DIR_SRCS)/routine.c \
+				$(DIR_SRCS)/utils.c \
 				$(DIR_SRCS)/main.c
 
-OBJS		:=	$(DIR_OBJS)/ft_check_args.o \
-				$(DIR_OBJS)/ft_control_free_msjs_errors.o \
-				$(DIR_OBJS)/ft_init_the_struct.o \
-				$(DIR_OBJS)/ft_utils.o \
+OBJS		:=	$(DIR_OBJS)/alloc_control.o \
+				$(DIR_OBJS)/exit.o \
+				$(DIR_OBJS)/errors.o \
+				$(DIR_OBJS)/init_structs.o \
+				$(DIR_OBJS)/monitor.o \
+				$(DIR_OBJS)/parse_args.o \
+				$(DIR_OBJS)/threads.o \
+				$(DIR_OBJS)/routine.o \
+				$(DIR_OBJS)/utils.o \
 				$(DIR_OBJS)/main.o
 
 # ==================== RULES ====================
