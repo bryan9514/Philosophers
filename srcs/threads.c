@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 18:05:42 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/28 18:00:34 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/07/31 12:12:23 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int	init_threads(t_data *data)
 			return (1);
 		}
 	}
-	usleep(100);
+	// ft_usleep(100);
 	if (pthread_create(&data->monitor_thread, NULL, monitor_routine, data) != 0)
 	{
 		error_create_thread(data, i, "monitor");

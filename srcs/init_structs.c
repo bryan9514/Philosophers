@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 09:18:26 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/30 15:52:03 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/07/31 11:13:26 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ static void	init_mutex(t_data *data)
 	}
 	pthread_mutex_init(&data->print, NULL);
 	pthread_mutex_init(&data->state_death, NULL);
+	pthread_mutex_init(&data->state_routine, NULL);
 }
 
 static void	init_philo(t_data *data)
@@ -49,13 +50,9 @@ static void	init_philo(t_data *data)
 	while (i < data->nbr_philos)
 	{
 		data->philo[i].id = i + 1;
-		pthread_mutex_lock(&data->philo[i].meal_count_mutex);
 		data->philo[i].counts_meals = 0;
-		pthread_mutex_unlock(&data->philo[i].meal_count_mutex);
 		data->philo[i].full = false;
-		pthread_mutex_lock(&data->philo[i].meal_mutex);
 		data->philo[i].last_meals = get_time();
-		pthread_mutex_unlock(&data->philo[i].meal_mutex);
 		data->philo[i].left_fork = &data->forks[i];
 		data->philo[i].right_fork = &data->forks[(i + 1) % data->nbr_philos];
 		data->philo[i].data = data;

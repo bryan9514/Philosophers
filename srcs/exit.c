@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 19:08:04 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/30 15:44:04 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/07/31 11:13:47 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ void	destroy_mutexs(t_data *data)
 	}
 	pthread_mutex_destroy(&data->print);
 	pthread_mutex_destroy(&data->state_death);
+	pthread_mutex_destroy(&data->state_routine);
 }
 
 void	join_pthreads(t_data *data)

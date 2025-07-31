@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 07:44:14 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/30 15:28:47 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/07/31 12:00:52 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ typedef struct	s_data
 	t_mtx		*forks;
 	t_mtx		print;
 	t_mtx		state_death;
+	t_mtx		state_routine;
 	t_alloc_mgr	*alloctrack;
 	pthread_t	monitor_thread;
 }	t_data;
@@ -139,6 +140,7 @@ int		init_threads(t_data *data);
 =============================================================
 */
 long	get_time(void);
+int	ft_usleep(size_t ms);
 
 
 
