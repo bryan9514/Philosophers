@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 19:08:04 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/31 11:13:47 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/04 19:32:16 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 
 void	end_rutine(t_data *data)
 {
-	join_pthreads(data);
+	if (data->philo->thread_id)
+		join_pthreads(data);
 	destroy_mutexs(data);
 	free_alloc(data->alloctrack);
 }

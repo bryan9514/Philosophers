@@ -68,6 +68,231 @@ re : fclean all
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
+/*   init_structs.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/19 09:18:26 by brturcio          #+#    #+#             */
+/*   Updated: 2025/07/31 11:13:26 by brturcio         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "philo.h"
+
+static void	ft_check(t_data *data, char **av)
+{
+	if (data->time_to_die < 100000 || data->time_to_eat < 100000
+		|| data->time_to_sleep < 100000)
+		error_exit(YLW
+			"⚠️  Warning: values lower than 100ms may cause "
+			"synchronization issues. ⚠️\n" RST);
+	if (av[5])
+		data->nbr_limit_meals = ft_atol(av[5]);
+	else
+		data->nbr_limit_meals = -1;
+}
+
+static void	init_mutex(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->nbr_philos)
+	{
+		pthread_mutex_init(&data->forks[i], NULL);
+		pthread_mutex_init(&data->philo[i].meal_mutex, NULL);
+		pthread_mutex_init(&data->philo[i].meal_count_mutex, NULL);
+		i++;
+	}
+	pthread_mutex_init(&data->print, NULL);
+	pthread_mutex_init(&data->state_death, NULL);
+	pthread_mutex_init(&data->state_routine, NULL);
+}
+
+static void	init_philo(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->nbr_philos)
+	{
+		data->philo[i].id = i + 1;
+		data->philo[i].counts_meals = 0;
+		data->philo[i].full = false;
+		data->philo[i].last_meals = get_time();
+		data->philo[i].left_fork = &data->forks[i];
+		data->philo[i].right_fork = &data->forks[(i + 1) % data->nbr_philos];
+		data->philo[i].data = data;
+		data->philo[i].thread_id = 0;
+		i++;
+	}
+}
+
+int	init_data(t_data *data, char **av)
+{
+	data->nbr_philos = ft_atol(av[1]);
+	if (data->nbr_philos > 200)
+		error_exit(YLW "⚠️  The maximum number of philosophers is 200.\n" RST);
+	data->time_to_die = ft_atol(av[2]) * 1000;
+	data->time_to_eat = ft_atol(av[3]) * 1000;
+	data->time_to_sleep = ft_atol(av[4]) * 1000;
+	ft_check(data, av);
+	data->start_rutine = 0;
+	data->end_rutine = false;
+	data->philo = SAFE_MALLOC(sizeof(t_philo) * data->nbr_philos,
+			data->alloctrack);
+	if (!data->philo)
+		return (1);
+	data->forks = SAFE_MALLOC(sizeof(t_mtx) * data->nbr_philos,
+			data->alloctrack);
+	if (!data->forks)
+		return (1);
+	memset(data->forks, 0, sizeof(t_mtx) * data->nbr_philos);
+	init_philo(data);
+	init_mutex(data);
+	return (0);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exit.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/26 19:08:04 by brturcio          #+#    #+#             */
+/*   Updated: 2025/07/31 11:13:47 by brturcio         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "philo.h"
+
+void	end_rutine(t_data *data)
+{
+	join_pthreads(data);
+	destroy_mutexs(data);
+	free_alloc(data->alloctrack);
+}
+
+void	destroy_mutexs(t_data *data)
+{
+	int	i;
+
+	i = -1;
+	while (++i < data->nbr_philos)
+	{
+		pthread_mutex_destroy(&data->forks[i]);
+		pthread_mutex_destroy(&data->philo[i].meal_mutex);
+		pthread_mutex_destroy(&data->philo[i].meal_count_mutex);
+	}
+	pthread_mutex_destroy(&data->print);
+	pthread_mutex_destroy(&data->state_death);
+	pthread_mutex_destroy(&data->state_routine);
+}
+
+void	join_pthreads(t_data *data)
+{
+	int	i;
+
+	i = -1;
+	while (++i < data->nbr_philos)
+		pthread_join(data->philo[i].thread_id, NULL);
+	pthread_join(data->monitor_thread, NULL);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   monitor.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/28 13:55:28 by brturcio          #+#    #+#             */
+/*   Updated: 2025/08/01 17:06:44 by brturcio         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "philo.h"
+
+int	check_dead(t_data *data)
+{
+	long	time_not_eat;
+	int	i;
+
+	i = 0;
+	while (i < data->nbr_philos)
+	{
+		pthread_mutex_lock(&data->state_death);
+		pthread_mutex_lock(&data->philo[i].meal_mutex);
+		time_not_eat = get_time() - data->philo[i].last_meals;
+		pthread_mutex_unlock(&data->philo[i].meal_mutex);
+		if (time_not_eat > data->time_to_die)
+		{
+			data->end_rutine = true;
+			print_status(&data->philo[i], DIED);
+			pthread_mutex_unlock(&data->state_death);
+			return (1);
+		}
+		pthread_mutex_unlock(&data->state_death);
+		i++;
+	}
+	return (0);
+}
+
+int	check_meals(t_data *data)
+{
+	int	i;
+	int	count_meals;
+
+	count_meals = 0;
+	i = 0;
+	if (data->nbr_limit_meals == -1)
+		return (0);
+	while (i < data->nbr_philos)
+	{
+		pthread_mutex_lock(&data->philo[i].meal_count_mutex);
+		if (data->philo[i].counts_meals >= data->nbr_limit_meals)
+			count_meals++;
+		pthread_mutex_unlock(&data->philo[i].meal_count_mutex);
+		i++;
+	}
+	if (count_meals == data->nbr_philos)
+	{
+		pthread_mutex_lock(&data->state_routine);
+		data->end_rutine = true;
+		pthread_mutex_unlock(&data->state_routine);
+		return (1);
+	}
+	return (0);
+}
+
+bool	is_simulation_ended(t_data *data)
+{
+	bool	end;
+
+	pthread_mutex_lock(&data->state_routine);
+	end = data->end_rutine;
+	pthread_mutex_unlock(&data->state_routine);
+	return (end);
+}
+
+void	*monitor_routine(void *arg)
+{
+	t_data	*data;
+
+	data = (t_data *)arg;
+	while (!is_simulation_ended(data))
+	{
+		if (check_dead(data))
+			return (NULL);
+		if (check_meals(data))
+			return (NULL);
+		usleep(100);
+	}
+	return (NULL);
+}
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
 /*   alloc_control.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
@@ -162,6 +387,41 @@ void	*safe_malloc(size_t bytes, t_alloc_mgr *tracker, int line,
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/17 07:41:44 by brturcio          #+#    #+#             */
+/*   Updated: 2025/07/28 15:48:52 by brturcio         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "philo.h"
+
+int	main(int ac, char **av)
+{
+	t_alloc_mgr	tracker;
+	t_data		philo;
+
+	tracker = (t_alloc_mgr){0};
+	philo.alloctrack = &tracker;
+	if (!(ac == 6 || ac == 5) || parse_args(ac, av))
+	{
+		error_exit(RED "\t\t\t❌ Incorrect input ❌\n "
+			"The sintaxys is:"RST WHT " ./philo 4 800 200 200"RST
+			RED "  or  "RST WHT "./philo 4 800 200 200 5\n"RST);
+	}
+	if (init_data(&philo, av))
+		return (1);
+	if (init_threads(&philo))
+		return (1);
+	// ft_printf_alloc(&tracker);
+	end_rutine(&philo);
+	return (EXIT_SUCCESS);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
 /*   ft_errors.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
@@ -219,253 +479,190 @@ void	ft_putstr_fd(char *s, int fd)
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exit.c                                             :+:      :+:    :+:   */
+/*   threads.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/26 19:08:04 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/31 11:13:47 by brturcio         ###   ########.fr       */
+/*   Created: 2025/07/25 18:05:42 by brturcio          #+#    #+#             */
+/*   Updated: 2025/08/01 17:11:23 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	end_rutine(t_data *data)
+static void	error_create_thread(t_data *data, int i, char *mgs)
 {
-	join_pthreads(data);
-	destroy_mutexs(data);
+	ft_putstr_fd(RED "❌ Error: failed to create ", 2);
+	ft_putstr_fd(mgs, 2);
+	ft_putstr_fd(" thread.\n" RST, 2);
+	while (--i >= 0)
+		pthread_join(data->philo[i].thread_id, NULL);
 	free_alloc(data->alloctrack);
 }
-
-void	destroy_mutexs(t_data *data)
+int	init_threads(t_data *data)
 {
 	int	i;
 
 	i = -1;
+	data->start_rutine = get_time();
 	while (++i < data->nbr_philos)
 	{
-		pthread_mutex_destroy(&data->forks[i]);
-		pthread_mutex_destroy(&data->philo[i].meal_mutex);
-		pthread_mutex_destroy(&data->philo[i].meal_count_mutex);
-	}
-	pthread_mutex_destroy(&data->print);
-	pthread_mutex_destroy(&data->state_death);
-	pthread_mutex_destroy(&data->state_routine);
-}
-
-void	join_pthreads(t_data *data)
-{
-	int	i;
-
-	i = -1;
-	while (++i < data->nbr_philos)
-		pthread_join(data->philo[i].thread_id, NULL);
-	pthread_join(data->monitor_thread, NULL);
-}
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   init_structs.c                                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/19 09:18:26 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/31 11:13:26 by brturcio         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "philo.h"
-
-static void	ft_check(t_data *data, char **av)
-{
-	if (data->time_to_die < 100000 || data->time_to_eat < 100000
-		|| data->time_to_sleep < 100000)
-		error_exit(YLW
-			"⚠️  Warning: values lower than 100ms may cause "
-			"synchronization issues. ⚠️\n" RST);
-	if (av[5])
-		data->nbr_limit_meals = ft_atol(av[5]);
-	else
-		data->nbr_limit_meals = -1;
-}
-
-static void	init_mutex(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	while (i < data->nbr_philos)
-	{
-		pthread_mutex_init(&data->forks[i], NULL);
-		pthread_mutex_init(&data->philo[i].meal_mutex, NULL);
-		pthread_mutex_init(&data->philo[i].meal_count_mutex, NULL);
-		i++;
-	}
-	pthread_mutex_init(&data->print, NULL);
-	pthread_mutex_init(&data->state_death, NULL);
-	pthread_mutex_init(&data->state_routine, NULL);
-}
-
-static void	init_philo(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	while (i < data->nbr_philos)
-	{
-		data->philo[i].id = i + 1;
-		data->philo[i].counts_meals = 0;
-		data->philo[i].full = false;
-		data->philo[i].last_meals = get_time();
-		data->philo[i].left_fork = &data->forks[i];
-		data->philo[i].right_fork = &data->forks[(i + 1) % data->nbr_philos];
-		data->philo[i].data = data;
-		data->philo[i].thread_id = 0;
-		i++;
-	}
-}
-
-int	init_data(t_data *data, char **av)
-{
-	data->nbr_philos = ft_atol(av[1]);
-	if (data->nbr_philos > 200)
-		error_exit(YLW "⚠️  The maximum number of philosophers is 200.\n" RST);
-	data->time_to_die = ft_atol(av[2]) * 1000;
-	data->time_to_eat = ft_atol(av[3]) * 1000;
-	data->time_to_sleep = ft_atol(av[4]) * 1000;
-	ft_check(data, av);
-	data->start_rutine = 0;
-	data->end_rutine = false;
-	data->philo = SAFE_MALLOC(sizeof(t_philo) * data->nbr_philos,
-			data->alloctrack);
-	if (!data->philo)
-		return (1);
-	data->forks = SAFE_MALLOC(sizeof(t_mtx) * data->nbr_philos,
-			data->alloctrack);
-	if (!data->forks)
-		return (1);
-	memset(data->forks, 0, sizeof(t_mtx) * data->nbr_philos);
-	init_philo(data);
-	init_mutex(data);
-	return (0);
-}
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/17 07:41:44 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/28 15:48:52 by brturcio         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "philo.h"
-
-int	main(int ac, char **av)
-{
-	t_alloc_mgr	tracker;
-	t_data		philo;
-
-	tracker = (t_alloc_mgr){0};
-	philo.alloctrack = &tracker;
-	if (!(ac == 6 || ac == 5) || parse_args(ac, av))
-	{
-		error_exit(RED "\t\t\t❌ Incorrect input ❌\n "
-			"The sintaxys is:"RST WHT " ./philo 4 800 200 200"RST
-			RED "  or  "RST WHT "./philo 4 800 200 200 5\n"RST);
-	}
-	if (init_data(&philo, av))
-		return (1);
-	if (init_threads(&philo))
-		return (1);
-	// ft_printf_alloc(&tracker);
-	end_rutine(&philo);
-	return (EXIT_SUCCESS);
-}
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   monitor.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/28 13:55:28 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/31 12:12:45 by brturcio         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "philo.h"
-
-int	check_dead(t_data *data)
-{
-	long	time_not_eat;
-	int	i;
-
-	i = 0;
-	while (i < data->nbr_philos)
-	{
-		pthread_mutex_lock(&data->state_death);
-		pthread_mutex_lock(&data->philo[i].meal_mutex);
-		time_not_eat = get_time() - data->philo[i].last_meals;
-		pthread_mutex_unlock(&data->philo[i].meal_mutex);
-		if (time_not_eat > data->time_to_die)
+		if (pthread_create(&data->philo[i].thread_id, NULL, start_routine,
+				&data->philo[i]) != 0)
 		{
-			data->end_rutine = true;
-			print_status(&data->philo[i], DIED);
-			pthread_mutex_unlock(&data->state_death);
+			error_create_thread(data, i, "philosophers");
 			return (1);
 		}
-		pthread_mutex_unlock(&data->state_death);
-		i++;
 	}
-	return (0);
-}
-
-int	check_meals(t_data *data)
-{
-	int	i;
-	int	count_meals;
-
-	count_meals = 0;
-	i = 0;
-	if (data->nbr_limit_meals == -1)
-		return (0);
-	while (i < data->nbr_philos)
+	if (pthread_create(&data->monitor_thread, NULL, monitor_routine, data) != 0)
 	{
-		pthread_mutex_lock(&data->philo[i].meal_count_mutex);
-		if (data->philo[i].counts_meals >= data->nbr_limit_meals)
-			count_meals++;
-		pthread_mutex_unlock(&data->philo[i].meal_count_mutex);
-		i++;
-	}
-	if (count_meals == data->nbr_philos)
-	{
-		pthread_mutex_lock(&data->state_routine);
-		data->end_rutine = true;
-		pthread_mutex_unlock(&data->state_routine);
+		error_create_thread(data, i, "monitor");
 		return (1);
 	}
 	return (0);
 }
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   routine.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/26 19:11:22 by brturcio          #+#    #+#             */
+/*   Updated: 2025/08/01 18:03:30 by brturcio         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-void	*monitor_routine(void *arg)
+#include "philo.h"
+
+void	print_status(t_philo *philo, char *action)
 {
-	t_data	*data;
+	pthread_mutex_lock(&philo->data->print);
+	printf("%ld %d %s\n", get_time() - philo->data->start_rutine, philo->id,
+		action);
+	pthread_mutex_unlock(&philo->data->print);
+}
 
-	data = (t_data *)arg;
-	while (!data->end_rutine)
+void	ft_eat(t_philo *philo)
+{
+	t_mtx	*first;
+	t_mtx	*second;
+
+	if (philo->id % 2 == 0)
 	{
-		if (check_dead(data))
-			return (NULL);
-		if (check_meals(data))
-			return (NULL);
-		usleep(1000);
+		first = philo->right_fork;
+		second = philo->left_fork;
+	}
+	else
+	{
+		first = philo->left_fork;
+		second = philo->right_fork;
+	}
+	pthread_mutex_lock(first);
+	print_status(philo, FORK);
+	pthread_mutex_lock(second);
+	print_status(philo, FORK);
+
+	pthread_mutex_lock(&philo->meal_mutex);
+	philo->last_meals = get_time();
+	pthread_mutex_unlock(&philo->meal_mutex);
+
+	print_status(philo, EAT);
+	usleep(philo->data->time_to_die);
+
+	pthread_mutex_lock(&philo->meal_count_mutex);
+	philo->counts_meals++;
+	pthread_mutex_unlock(&philo->meal_count_mutex);
+
+	pthread_mutex_unlock(philo->right_fork);
+	pthread_mutex_unlock(philo->left_fork);
+}
+
+
+void	ft_think(t_philo *philo)
+{
+	print_status(philo, THINK);
+}
+
+void	ft_sleep(t_philo *philo)
+{
+	print_status(philo, SLEEP);
+	usleep(philo->data->time_to_sleep);
+}
+
+void	*start_routine(void *arg)
+{
+	t_philo	*philo;
+
+	philo = (t_philo *)arg;
+	if (philo->id % 2 == 0)
+		usleep(500);
+	while (!is_simulation_ended(philo->data))
+	{
+		ft_eat(philo);
+		pthread_mutex_lock(&philo->data->state_routine);
+		if (philo->data->end_rutine)
+		{
+			pthread_mutex_unlock(&philo->data->state_routine);
+			break ;
+		}
+		pthread_mutex_unlock(&philo->data->state_routine);
+		// usleep(500);
+		ft_sleep(philo);
+		pthread_mutex_lock(&philo->data->state_routine);
+		if (philo->data->end_rutine)
+		{
+			pthread_mutex_unlock(&philo->data->state_routine);
+			break ;
+		}
+		pthread_mutex_unlock(&philo->data->state_routine);
+		ft_think(philo);
 	}
 	return (NULL);
 }
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/25 18:29:39 by brturcio          #+#    #+#             */
+/*   Updated: 2025/08/01 14:05:21 by brturcio         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include "philo.h"
+
+int	ft_usleep(size_t ms, t_data *data)
+{
+	size_t	start;
+
+	start = get_time();
+	while ((get_time() - start) < ms)
+	{
+		pthread_mutex_lock(&data->state_routine);
+		if (data->end_rutine)
+		{
+			pthread_mutex_unlock(&data->state_routine);
+			break ;
+		}
+		pthread_mutex_unlock(&data->state_routine);
+		usleep(100);
+	}
+	return (0);
+}
+
+
+long	get_time(void)
+{
+	long			start;
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	start = ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+	return (start);
+}
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -554,184 +751,12 @@ int	parse_args(int ac, char **av)
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   routine.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/26 19:11:22 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/31 12:12:58 by brturcio         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "philo.h"
-
-void	print_status(t_philo *philo, char *action)
-{
-	pthread_mutex_lock(&philo->data->print);
-	printf("%ld %d %s\n", get_time() - philo->data->start_rutine, philo->id,
-		action);
-	pthread_mutex_unlock(&philo->data->print);
-}
-
-void	ft_eat(t_philo *philo)
-{
-	t_mtx	*first;
-	t_mtx	*second;
-
-	if (philo->left_fork < philo->right_fork)
-	{
-		first = philo->left_fork;
-		second = philo->right_fork;
-	}
-	else
-	{
-		first = philo->right_fork;
-		second = philo->left_fork;
-	}
-	pthread_mutex_lock(first);
-	print_status(philo, FORK);
-	pthread_mutex_lock(second);
-	print_status(philo, FORK);
-	pthread_mutex_lock(&philo->meal_mutex);
-	philo->last_meals = get_time();
-	pthread_mutex_unlock(&philo->meal_mutex);
-	print_status(philo, EAT);
-	usleep(philo->data->time_to_eat);
-	pthread_mutex_lock(&philo->meal_count_mutex);
-	philo->counts_meals++;
-	pthread_mutex_unlock(&philo->meal_count_mutex);
-	pthread_mutex_unlock(philo->right_fork);
-	pthread_mutex_unlock(philo->left_fork);
-}
-
-void	ft_think(t_philo *philo)
-{
-	print_status(philo, THINK);
-}
-
-void	ft_sleep(t_philo *philo)
-{
-	print_status(philo, SLEEP);
-	usleep(philo->data->time_to_sleep);
-}
-
-void	*start_routine(void *arg)
-{
-	t_philo	*philo;
-
-	philo = (t_philo *)arg;
-	if (philo->id % 2 == 0)
-		usleep(500);
-	while (!philo->data->end_rutine)
-	{
-		ft_eat(philo);
-		pthread_mutex_lock(&philo->data->state_routine);
-		if (philo->data->end_rutine)
-		{
-			pthread_mutex_unlock(&philo->data->state_routine);
-			break ;
-		}
-		pthread_mutex_unlock(&philo->data->state_routine);
-		ft_sleep(philo);
-		pthread_mutex_lock(&philo->data->state_routine);
-		if (philo->data->end_rutine)
-		{
-			pthread_mutex_unlock(&philo->data->state_routine);
-			break ;
-		}
-		pthread_mutex_unlock(&philo->data->state_routine);
-		ft_think(philo);
-	}
-	return (NULL);
-}
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   threads.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/25 18:05:42 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/31 12:12:23 by brturcio         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "philo.h"
-
-static void	error_create_thread(t_data *data, int i, char *mgs)
-{
-	ft_putstr_fd(RED "❌ Error: failed to create ", 2);
-	ft_putstr_fd(mgs, 2);
-	ft_putstr_fd(" thread.\n" RST, 2);
-	while (--i >= 0)
-		pthread_join(data->philo[i].thread_id, NULL);
-	free_alloc(data->alloctrack);
-}
-int	init_threads(t_data *data)
-{
-	int	i;
-
-	i = -1;
-	data->start_rutine = get_time();
-	while (++i < data->nbr_philos)
-	{
-		if (pthread_create(&data->philo[i].thread_id, NULL, start_routine,
-				&data->philo[i]) != 0)
-		{
-			error_create_thread(data, i, "philosophers");
-			return (1);
-		}
-	}
-	// ft_usleep(100);
-	if (pthread_create(&data->monitor_thread, NULL, monitor_routine, data) != 0)
-	{
-		error_create_thread(data, i, "monitor");
-		return (1);
-	}
-	return (0);
-}
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/25 18:29:39 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/31 12:21:55 by brturcio         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "philo.h"
-
-int	ft_usleep(size_t ms, )
-{
-	size_t	start;
-
-	start = get_time();
-	while ((get_time() - start) < ms)
-		usleep(100);
-	return (0);
-}
-
-long	get_time(void)
-{
-	long			start;
-	struct timeval	tv;
-
-	gettimeofday(&tv, NULL);
-	start = ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
-	return (start);
-}
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 07:44:14 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/31 12:00:52 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/01 14:32:59 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -865,7 +890,7 @@ int		init_threads(t_data *data);
 =============================================================
 */
 long	get_time(void);
-int	ft_usleep(size_t ms);
+int	ft_usleep(size_t ms, t_data *data);
 
 
 
@@ -879,5 +904,8 @@ void	*start_routine(void *arg);
 
 
 void	*monitor_routine(void *arg);
+
+
+bool	is_simulation_ended(t_data *data);
 
 #endif

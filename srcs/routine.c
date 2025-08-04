@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 19:11:22 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/31 13:04:50 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/04 18:42:37 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,32 +24,44 @@ void	ft_eat(t_philo *philo)
 {
 	t_mtx	*first;
 	t_mtx	*second;
+	bool	tmp;
 
-	if (philo->left_fork < philo->right_fork)
-	{
-		first = philo->left_fork;
-		second = philo->right_fork;
-	}
-	else
+	if (philo->id % 2 == 0)
 	{
 		first = philo->right_fork;
 		second = philo->left_fork;
+	}
+	else
+	{
+		first = philo->left_fork;
+		second = philo->right_fork;
 	}
 	pthread_mutex_lock(first);
 	print_status(philo, FORK);
 	pthread_mutex_lock(second);
 	print_status(philo, FORK);
+
 	pthread_mutex_lock(&philo->meal_mutex);
 	philo->last_meals = get_time();
 	pthread_mutex_unlock(&philo->meal_mutex);
+
 	print_status(philo, EAT);
-	ft_usleep(philo->data->time_to_eat, philo->data);
+	tmp = ft_my_usleep(philo->data->time_to_eat, philo->data);
+	if (tmp)
+	{
+		pthread_mutex_unlock(second);
+		pthread_mutex_unlock(first);
+		return ;
+	}
+
 	pthread_mutex_lock(&philo->meal_count_mutex);
 	philo->counts_meals++;
 	pthread_mutex_unlock(&philo->meal_count_mutex);
-	pthread_mutex_unlock(philo->right_fork);
-	pthread_mutex_unlock(philo->left_fork);
+
+	pthread_mutex_unlock(second);
+	pthread_mutex_unlock(first);
 }
+
 
 void	ft_think(t_philo *philo)
 {
@@ -59,7 +71,7 @@ void	ft_think(t_philo *philo)
 void	ft_sleep(t_philo *philo)
 {
 	print_status(philo, SLEEP);
-	ft_usleep(philo->data->time_to_sleep, philo->data);
+	ft_my_usleep(philo->data->time_to_sleep, philo->data);
 }
 
 void	*start_routine(void *arg)
@@ -68,8 +80,8 @@ void	*start_routine(void *arg)
 
 	philo = (t_philo *)arg;
 	if (philo->id % 2 == 0)
-		ft_usleep(500 , philo->data);
-	while (!philo->data->end_rutine)
+		usleep(500);
+	while (!is_simulation_ended(philo->data))
 	{
 		ft_eat(philo);
 		pthread_mutex_lock(&philo->data->state_routine);

@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 13:55:28 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/31 13:03:41 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/04 18:56:46 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,18 +20,17 @@ int	check_dead(t_data *data)
 	i = 0;
 	while (i < data->nbr_philos)
 	{
-		pthread_mutex_lock(&data->state_death);
 		pthread_mutex_lock(&data->philo[i].meal_mutex);
 		time_not_eat = get_time() - data->philo[i].last_meals;
 		pthread_mutex_unlock(&data->philo[i].meal_mutex);
 		if (time_not_eat > data->time_to_die)
 		{
+			pthread_mutex_lock(&data->state_routine);
 			data->end_rutine = true;
+			pthread_mutex_unlock(&data->state_routine);
 			print_status(&data->philo[i], DIED);
-			pthread_mutex_unlock(&data->state_death);
 			return (1);
 		}
-		pthread_mutex_unlock(&data->state_death);
 		i++;
 	}
 	return (0);
@@ -64,18 +63,28 @@ int	check_meals(t_data *data)
 	return (0);
 }
 
+bool	is_simulation_ended(t_data *data)
+{
+	bool	end;
+
+	pthread_mutex_lock(&data->state_routine);
+	end = data->end_rutine;
+	pthread_mutex_unlock(&data->state_routine);
+	return (end);
+}
+
 void	*monitor_routine(void *arg)
 {
 	t_data	*data;
 
 	data = (t_data *)arg;
-	while (!data->end_rutine)
+	while (!is_simulation_ended(data))
 	{
 		if (check_dead(data))
 			return (NULL);
 		if (check_meals(data))
 			return (NULL);
-		ft_usleep(1000, data);
+		ft_my_usleep(100, data);
 	}
 	return (NULL);
 }

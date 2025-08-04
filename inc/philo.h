@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 07:44:14 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/31 13:03:04 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/04 17:38:00 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ typedef struct s_philo
 	long			last_meals;
 	t_mtx			*left_fork;
 	t_mtx			*right_fork;
-	t_mtx			meal_mutex;
+	t_mtx			meal_mutex; // para last_meals
 	t_mtx			meal_count_mutex;
 	struct s_data	*data;
 	pthread_t		thread_id;
@@ -87,7 +87,7 @@ typedef struct	s_data
 	t_mtx		*forks;
 	t_mtx		print;
 	t_mtx		state_death;
-	t_mtx		state_routine;
+	t_mtx		state_routine; // para end_rutine
 	t_alloc_mgr	*alloctrack;
 	pthread_t	monitor_thread;
 }	t_data;
@@ -140,7 +140,7 @@ int		init_threads(t_data *data);
 =============================================================
 */
 long	get_time(void);
-int	ft_usleep(size_t ms, t_data *data);
+int		ft_my_usleep(size_t ms, t_data *data);
 
 
 
@@ -154,5 +154,9 @@ void	*start_routine(void *arg);
 
 
 void	*monitor_routine(void *arg);
+
+
+bool	is_simulation_ended(t_data *data);
+
 
 #endif

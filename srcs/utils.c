@@ -6,23 +6,13 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 18:29:39 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/31 13:02:46 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/04 17:39:10 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-// int	ft_usleep(size_t ms)
-// {
-// 	size_t	start;
-
-// 	start = get_time();
-// 	while ((get_time() - start) < ms)
-// 		usleep(100);
-// 	return (0);
-// }
-
-int	ft_usleep(size_t ms, t_data *data)
+int	ft_my_usleep(size_t ms, t_data *data)
 {
 	size_t	start;
 
@@ -33,14 +23,13 @@ int	ft_usleep(size_t ms, t_data *data)
 		if (data->end_rutine)
 		{
 			pthread_mutex_unlock(&data->state_routine);
-			break ;
+			return (1) ;
 		}
 		pthread_mutex_unlock(&data->state_routine);
 		usleep(100);
 	}
 	return (0);
 }
-
 
 long	get_time(void)
 {

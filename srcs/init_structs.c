@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 09:18:26 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/31 11:13:26 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/04 17:49:26 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 static void	ft_check(t_data *data, char **av)
 {
-	if (data->time_to_die < 100000 || data->time_to_eat < 100000
-		|| data->time_to_sleep < 100000)
+	if (data->time_to_die < 100 || data->time_to_eat < 100
+		|| data->time_to_sleep < 100)
 		error_exit(YLW
 			"⚠️  Warning: values lower than 100ms may cause "
 			"synchronization issues. ⚠️\n" RST);
@@ -66,9 +66,9 @@ int	init_data(t_data *data, char **av)
 	data->nbr_philos = ft_atol(av[1]);
 	if (data->nbr_philos > 200)
 		error_exit(YLW "⚠️  The maximum number of philosophers is 200.\n" RST);
-	data->time_to_die = ft_atol(av[2]) * 1000;
-	data->time_to_eat = ft_atol(av[3]) * 1000;
-	data->time_to_sleep = ft_atol(av[4]) * 1000;
+	data->time_to_die = ft_atol(av[2]);
+	data->time_to_eat = ft_atol(av[3]);
+	data->time_to_sleep = ft_atol(av[4]);
 	ft_check(data, av);
 	data->start_rutine = 0;
 	data->end_rutine = false;

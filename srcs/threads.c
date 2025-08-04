@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 18:05:42 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/31 12:12:23 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/04 19:09:42 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,14 +21,26 @@ static void	error_create_thread(t_data *data, int i, char *mgs)
 		pthread_join(data->philo[i].thread_id, NULL);
 	free_alloc(data->alloctrack);
 }
+
+void	one_philo(t_data *data)
+{
+	print_status(&data->philo[0], FORK);
+	ft_my_usleep(data->time_to_die, data);
+	print_status(&data->philo[0], DIED);
+	data->end_rutine = true;
+}
+
 int	init_threads(t_data *data)
 {
 	int	i;
 
 	i = -1;
 	data->start_rutine = get_time();
+
 	while (++i < data->nbr_philos)
 	{
+		if (data->nbr_philos == 1)
+			return (one_philo(data), 0);
 		if (pthread_create(&data->philo[i].thread_id, NULL, start_routine,
 				&data->philo[i]) != 0)
 		{
@@ -36,7 +48,6 @@ int	init_threads(t_data *data)
 			return (1);
 		}
 	}
-	// ft_usleep(100);
 	if (pthread_create(&data->monitor_thread, NULL, monitor_routine, data) != 0)
 	{
 		error_create_thread(data, i, "monitor");
