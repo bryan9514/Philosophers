@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 19:27:06 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/26 19:57:51 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/05 18:24:40 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,12 @@ void	printf_alloc(t_alloc_mgr *tracker)
 	while (tmp)
 	{
 		printf("ID : %-3d		| Direccion: %p 	| Freed: %d	"
-				"| Linea: %-4d 	| Archivo: %s\n",
-				tmp->id,
-				tmp->ptr,
-				tmp->freed,
-				tmp->line,
-				tmp->file);
+			"| Linea: %-4d 	| Archivo: %s\n",
+			tmp->id,
+			tmp->ptr,
+			tmp->freed,
+			tmp->line,
+			tmp->file);
 		tmp = tmp->next;
 	}
 	printf("--- Fin de la lista ---\n\n");

@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 09:18:26 by brturcio          #+#    #+#             */
-/*   Updated: 2025/08/04 17:49:26 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/05 18:23:11 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,12 +72,12 @@ int	init_data(t_data *data, char **av)
 	ft_check(data, av);
 	data->start_rutine = 0;
 	data->end_rutine = false;
-	data->philo = SAFE_MALLOC(sizeof(t_philo) * data->nbr_philos,
-			data->alloctrack);
+	data->philo = safe_malloc(sizeof(t_philo) * data->nbr_philos,
+			data->alloctrack, __LINE__, __FILE__);
 	if (!data->philo)
 		return (1);
-	data->forks = SAFE_MALLOC(sizeof(t_mtx) * data->nbr_philos,
-			data->alloctrack);
+	data->forks = safe_malloc(sizeof(t_mtx) * data->nbr_philos,
+			data->alloctrack, __LINE__, __FILE__);
 	if (!data->forks)
 		return (1);
 	memset(data->forks, 0, sizeof(t_mtx) * data->nbr_philos);

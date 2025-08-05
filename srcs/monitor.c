@@ -6,16 +6,16 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 13:55:28 by brturcio          #+#    #+#             */
-/*   Updated: 2025/08/04 18:56:46 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/05 18:23:33 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	check_dead(t_data *data)
+static int	check_dead(t_data *data)
 {
 	long	time_not_eat;
-	int	i;
+	int		i;
 
 	i = 0;
 	while (i < data->nbr_philos)
@@ -36,7 +36,7 @@ int	check_dead(t_data *data)
 	return (0);
 }
 
-int	check_meals(t_data *data)
+static int	check_meals(t_data *data)
 {
 	int	i;
 	int	count_meals;
@@ -58,6 +58,7 @@ int	check_meals(t_data *data)
 		pthread_mutex_lock(&data->state_routine);
 		data->end_rutine = true;
 		pthread_mutex_unlock(&data->state_routine);
+		print_status(&data->philo[0], FULL);
 		return (1);
 	}
 	return (0);
@@ -88,4 +89,3 @@ void	*monitor_routine(void *arg)
 	}
 	return (NULL);
 }
-

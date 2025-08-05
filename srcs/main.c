@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 07:41:44 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/28 15:48:52 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/05 18:26:55 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	main(int ac, char **av)
 		return (1);
 	if (init_threads(&philo))
 		return (1);
-	// ft_printf_alloc(&tracker);
+	// printf_alloc(&tracker);
 	end_rutine(&philo);
 	return (EXIT_SUCCESS);
 }

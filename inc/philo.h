@@ -6,22 +6,21 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 07:44:14 by brturcio          #+#    #+#             */
-/*   Updated: 2025/08/04 17:38:00 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/05 18:19:10 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/time.h>
-#include <pthread.h>
-#include <stdbool.h>
-#include <limits.h>
-
+# include <string.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <sys/time.h>
+# include <pthread.h>
+# include <stdbool.h>
+# include <limits.h>
 
 # define BLK "\e[0;90m"
 # define RED "\e[0;91m"
@@ -33,16 +32,7 @@
 # define WHT "\e[0;97m"
 # define RST "\e[0m"
 
-
-# define FORK PUR"has taken a fork"RST
-# define EAT GRN"is eating"RST
-# define SLEEP CYN"is sleeping"RST
-# define THINK YLW"is thinking"RST
-# define DIED RED"died"RST
-
-# define SAFE_MALLOC(bytes, tracker) safe_malloc(bytes, tracker, __LINE__, __FILE__)
-
-typedef pthread_mutex_t t_mtx;
+typedef pthread_mutex_t	t_mtx;
 
 typedef struct s_alloc_list
 {
@@ -58,7 +48,7 @@ typedef struct s_alloc_mgr
 {
 	t_alloc_list	*head;
 	int				count;
-} t_alloc_mgr;
+}	t_alloc_mgr;
 
 typedef struct s_philo
 {
@@ -68,13 +58,13 @@ typedef struct s_philo
 	long			last_meals;
 	t_mtx			*left_fork;
 	t_mtx			*right_fork;
-	t_mtx			meal_mutex; // para last_meals
+	t_mtx			meal_mutex;
 	t_mtx			meal_count_mutex;
 	struct s_data	*data;
 	pthread_t		thread_id;
 }	t_philo;
 
-typedef struct	s_data
+typedef struct s_data
 {
 	long		nbr_philos;
 	long		time_to_die;
@@ -87,17 +77,28 @@ typedef struct	s_data
 	t_mtx		*forks;
 	t_mtx		print;
 	t_mtx		state_death;
-	t_mtx		state_routine; // para end_rutine
+	t_mtx		state_routine;
 	t_alloc_mgr	*alloctrack;
 	pthread_t	monitor_thread;
 }	t_data;
+
+typedef enum e_action
+{
+	FORK,
+	EAT,
+	SLEEP,
+	THINK,
+	DIED,
+	FULL
+}	t_action;
 
 /*
 =============================================================
                  control_alloc.c
 =============================================================
 */
-void	*safe_malloc(size_t bytes, t_alloc_mgr *tracker, int line, const char *file);
+void	*safe_malloc(size_t bytes, t_alloc_mgr *tracker,
+			int line, const char *file);
 void	free_alloc(t_alloc_mgr *tracker);
 void	printf_alloc(t_alloc_mgr *tracker);
 
@@ -112,11 +113,27 @@ void	ft_putstr_fd(char *s, int fd);
 
 /*
 =============================================================
+                 exit.c
+=============================================================
+*/
+void	end_rutine(t_data *data);
+void	destroy_mutexs(t_data *data);
+void	join_pthreads(t_data *data);
+
+/*
+=============================================================
                  init_the_struct.c
 =============================================================
 */
 int		init_data(t_data *data, char **av);
 
+/*
+=============================================================
+                 monitor.c
+=============================================================
+*/
+bool	is_simulation_ended(t_data *data);
+void	*monitor_routine(void *arg);
 /*
 =============================================================
                  parsin_args.c
@@ -127,36 +144,26 @@ int		parse_args(int ac, char **av);
 
 /*
 =============================================================
-                 play_simulation.c
+                 routine.c
 =============================================================
 */
-// void	*play_rutine(void *arg);
-int		init_threads(t_data *data);
+void	print_status(t_philo *philo, int action);
+void	*start_routine(void *arg);
 
+/*
+=============================================================
+                 threads.c
+=============================================================
+*/
+int		init_threads(t_data *data);
 
 /*
 =============================================================
                  utils.c
 =============================================================
 */
-long	get_time(void);
 int		ft_my_usleep(size_t ms, t_data *data);
-
-
-
-void	join_pthreads(t_data *data);
-void	destroy_mutexs(t_data *data);
-void	end_rutine(t_data *data);
-
-void	print_status(t_philo *philo, char *action);
-
-void	*start_routine(void *arg);
-
-
-void	*monitor_routine(void *arg);
-
-
-bool	is_simulation_ended(t_data *data);
-
+long	get_time(void);
+char	*select_action(int action);
 
 #endif

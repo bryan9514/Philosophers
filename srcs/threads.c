@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 18:05:42 by brturcio          #+#    #+#             */
-/*   Updated: 2025/08/04 19:09:42 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/05 18:08:20 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static void	error_create_thread(t_data *data, int i, char *mgs)
 	free_alloc(data->alloctrack);
 }
 
-void	one_philo(t_data *data)
+static void	one_philo(t_data *data)
 {
 	print_status(&data->philo[0], FORK);
 	ft_my_usleep(data->time_to_die, data);
@@ -36,7 +36,6 @@ int	init_threads(t_data *data)
 
 	i = -1;
 	data->start_rutine = get_time();
-
 	while (++i < data->nbr_philos)
 	{
 		if (data->nbr_philos == 1)
