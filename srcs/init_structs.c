@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 09:18:26 by brturcio          #+#    #+#             */
-/*   Updated: 2025/08/05 18:23:11 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/06 14:12:58 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@ static void	ft_check(t_data *data, char **av)
 {
 	if (data->time_to_die < 100 || data->time_to_eat < 100
 		|| data->time_to_sleep < 100)
-		error_exit(YLW
-			"⚠️  Warning: values lower than 100ms may cause "
-			"synchronization issues. ⚠️\n" RST);
+		ft_putstr_fd(YLW
+			"\n⚠️  Warning: Values lower than 100ms may cause "
+			"synchronization issues. ⚠️\n\n" RST, 1);
 	if (av[5])
 		data->nbr_limit_meals = ft_atol(av[5]);
 	else
@@ -65,7 +65,8 @@ int	init_data(t_data *data, char **av)
 {
 	data->nbr_philos = ft_atol(av[1]);
 	if (data->nbr_philos > 200)
-		error_exit(YLW "⚠️  The maximum number of philosophers is 200.\n" RST);
+		ft_putstr_fd(YLW "\n⚠️  Warning: The maximum recommended"
+			"number is 200.\n\n" RST, 1);
 	data->time_to_die = ft_atol(av[2]);
 	data->time_to_eat = ft_atol(av[3]);
 	data->time_to_sleep = ft_atol(av[4]);
