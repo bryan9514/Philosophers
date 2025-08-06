@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 13:55:28 by brturcio          #+#    #+#             */
-/*   Updated: 2025/08/05 18:23:33 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/06 17:57:39 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ static int	check_dead(t_data *data)
 	return (0);
 }
 
-static int	check_meals(t_data *data)
+int	check_meals(t_data *data)
 {
 	int	i;
 	int	count_meals;

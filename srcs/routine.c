@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 19:11:22 by brturcio          #+#    #+#             */
-/*   Updated: 2025/08/06 15:14:16 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/06 17:51:46 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,12 @@ static void	ft_eat(t_philo *philo)
 	t_mtx	*first;
 	t_mtx	*second;
 
+
+	// if (philo->counts_meals == philo->data->nbr_limit_meals)
+	// 	return ;
 	if (philo->id % 2 != 0)
 	{
+		ft_my_usleep(5, philo->data);
 		first = philo->right_fork;
 		second = philo->left_fork;
 	}
@@ -81,7 +85,7 @@ void	*start_routine(void *arg)
 
 	philo = (t_philo *)arg;
 	if (philo->id % 2 != 0)
-		usleep(15000);
+		usleep(500);
 	while (!is_simulation_ended(philo->data))
 	{
 		ft_eat(philo);

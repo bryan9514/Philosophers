@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 07:44:14 by brturcio          #+#    #+#             */
-/*   Updated: 2025/08/05 18:19:10 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/06 17:28:37 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,5 +165,7 @@ int		init_threads(t_data *data);
 int		ft_my_usleep(size_t ms, t_data *data);
 long	get_time(void);
 char	*select_action(int action);
+
+int	check_meals(t_data *data);
 
 #endif
