@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 07:41:44 by brturcio          #+#    #+#             */
-/*   Updated: 2025/08/06 15:31:13 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/09 12:08:56 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,15 @@ int	main(int ac, char **av)
 			RED "  or  "RST WHT "./philo 4 800 200 200 5\n"RST);
 	}
 	if (init_data(&philo, av))
+	{
+		end_rutine(&philo);
 		return (1);
+	}
 	if (init_threads(&philo))
+	{
+		end_rutine(&philo);
 		return (1);
+	}
 	end_rutine(&philo);
 	return (EXIT_SUCCESS);
 }

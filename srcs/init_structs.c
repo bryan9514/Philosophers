@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 09:18:26 by brturcio          #+#    #+#             */
-/*   Updated: 2025/08/06 14:12:58 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/09 12:43:05 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,21 +25,28 @@ static void	ft_check(t_data *data, char **av)
 		data->nbr_limit_meals = -1;
 }
 
-static void	init_mutex(t_data *data)
+static int	init_mutex(t_data *data)
 {
 	int	i;
 
 	i = 0;
 	while (i < data->nbr_philos)
 	{
-		pthread_mutex_init(&data->forks[i], NULL);
-		pthread_mutex_init(&data->philo[i].meal_mutex, NULL);
-		pthread_mutex_init(&data->philo[i].meal_count_mutex, NULL);
+		if (pthread_mutex_init(&data->forks[i], NULL) != 0)
+			return (1);
+		if (pthread_mutex_init(&data->philo[i].meal_mutex, NULL) != 0)
+			return (1);
+		if (pthread_mutex_init(&data->philo[i].meal_count_mutex, NULL) != 0)
+			return (1);
 		i++;
 	}
-	pthread_mutex_init(&data->print, NULL);
-	pthread_mutex_init(&data->state_death, NULL);
-	pthread_mutex_init(&data->state_routine, NULL);
+	if (pthread_mutex_init(&data->print, NULL) != 0)
+		return (1);
+	if (pthread_mutex_init(&data->state_death, NULL) != 0)
+		return (1);
+	if (pthread_mutex_init(&data->state_routine, NULL) != 0)
+		return (1);
+	return (0);
 }
 
 static void	init_philo(t_data *data)
@@ -83,6 +90,7 @@ int	init_data(t_data *data, char **av)
 		return (1);
 	memset(data->forks, 0, sizeof(t_mtx) * data->nbr_philos);
 	init_philo(data);
-	init_mutex(data);
+	if (init_mutex(data))
+		return (1);
 	return (0);
 }

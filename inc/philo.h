@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 07:44:14 by brturcio          #+#    #+#             */
-/*   Updated: 2025/08/06 17:28:37 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/09 12:21:18 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,8 @@ int		init_data(t_data *data, char **av);
 =============================================================
 */
 bool	is_simulation_ended(t_data *data);
+
+bool	philo_is_full(t_philo *philo);
 void	*monitor_routine(void *arg);
 /*
 =============================================================
@@ -165,7 +167,5 @@ int		init_threads(t_data *data);
 int		ft_my_usleep(size_t ms, t_data *data);
 long	get_time(void);
 char	*select_action(int action);
-
-int	check_meals(t_data *data);
 
 #endif

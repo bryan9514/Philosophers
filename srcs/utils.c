@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 18:29:39 by brturcio          #+#    #+#             */
-/*   Updated: 2025/08/05 16:39:43 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/09 14:16:42 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,6 @@ char	*select_action(int action)
 	if (action == DIED)
 		return (RED"died"RST);
 	if (action == FULL)
-		return (BLU"All the philosophers have eaten\n"RST);
+		return (BLU"All the philosophers have eaten"RST);
 	return ("");
 }

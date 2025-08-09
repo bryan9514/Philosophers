@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 13:29:25 by brturcio          #+#    #+#             */
-/*   Updated: 2025/08/06 14:00:04 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/09 12:19:13 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,8 @@ static int	check_max(char *str)
 	long	num;
 
 	num = ft_atol(str);
+	if (num == 0)
+		return (1);
 	if (num > INT_MAX)
 		return (1);
 	return (0);
@@ -78,7 +80,7 @@ int	parse_args(int ac, char **av)
 			j++;
 		}
 		if (check_max(av[i]))
-			error_exit("⛔ INT_MAX is the limited ⛔\n");
+			error_exit("⛔ Value must be between 1 and INT_MAX ⛔\n");
 		i++;
 	}
 	return (0);

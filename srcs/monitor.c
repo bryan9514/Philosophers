@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 13:55:28 by brturcio          #+#    #+#             */
-/*   Updated: 2025/08/06 17:57:39 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/09 14:23:45 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ int	check_meals(t_data *data)
 	while (i < data->nbr_philos)
 	{
 		pthread_mutex_lock(&data->philo[i].meal_count_mutex);
-		if (data->philo[i].counts_meals >= data->nbr_limit_meals)
+		if (data->philo[i].full)
 			count_meals++;
 		pthread_mutex_unlock(&data->philo[i].meal_count_mutex);
 		i++;
@@ -74,6 +74,16 @@ bool	is_simulation_ended(t_data *data)
 	return (end);
 }
 
+bool	philo_is_full(t_philo *philo)
+{
+	bool	full;
+
+	pthread_mutex_lock(&philo->meal_count_mutex);
+	full = philo->full;
+	pthread_mutex_unlock(&philo->meal_count_mutex);
+	return (full);
+}
+
 void	*monitor_routine(void *arg)
 {
 	t_data	*data;
@@ -85,7 +95,7 @@ void	*monitor_routine(void *arg)
 			return (NULL);
 		if (check_meals(data))
 			return (NULL);
-		ft_my_usleep(100, data);
+		ft_my_usleep(3, data);
 	}
 	return (NULL);
 }
