@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 13:29:25 by brturcio          #+#    #+#             */
-/*   Updated: 2025/08/09 12:19:13 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/12 12:01:22 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,13 +74,13 @@ int	parse_args(int ac, char **av)
 			while (av[i][j] == '+')
 				j++;
 			if (av[i][j] == '-')
-				error_exit("⛔ Only positive value ⛔\n");
+				return (error_exit("\t\t\t⛔ Only positive value ⛔\n"));
 			if (!valid_character(av[i][j]))
-				error_exit("⛔ Only digit ⛔\n");
+				return (error_exit("\t\t\t   ⛔ Only digit ⛔\n"));
 			j++;
 		}
 		if (check_max(av[i]))
-			error_exit("⛔ Value must be between 1 and INT_MAX ⛔\n");
+			return (error_exit("\t\t⛔Value must be between 1 and INT_MAX⛔\n"));
 		i++;
 	}
 	return (0);

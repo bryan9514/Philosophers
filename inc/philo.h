@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 07:44:14 by brturcio          #+#    #+#             */
-/*   Updated: 2025/08/09 12:21:18 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/12 12:06:20 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,6 @@ typedef enum e_action
 void	*safe_malloc(size_t bytes, t_alloc_mgr *tracker,
 			int line, const char *file);
 void	free_alloc(t_alloc_mgr *tracker);
-void	printf_alloc(t_alloc_mgr *tracker);
 
 /*
 =============================================================
@@ -108,7 +107,7 @@ void	printf_alloc(t_alloc_mgr *tracker);
 =============================================================
 */
 void	error_alloc(const char *file, int line);
-void	error_exit(char *str);
+int		error_exit(char *str);
 void	ft_putstr_fd(char *s, int fd);
 
 /*
@@ -126,6 +125,13 @@ void	join_pthreads(t_data *data);
 =============================================================
 */
 int		init_data(t_data *data, char **av);
+
+/*
+=============================================================
+                 main.c
+=============================================================
+*/
+int		check_empty_value(char **av);
 
 /*
 =============================================================

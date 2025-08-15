@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_errors.c                                        :+:      :+:    :+:   */
+/*   errors.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/20 11:20:56 by brturcio          #+#    #+#             */
-/*   Updated: 2025/07/26 19:28:02 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/12 10:18:55 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,10 @@ void	error_alloc(const char *file, int line)
 	ft_putstr_fd(" 🚨⛔\n", 2);
 }
 
-void	error_exit(char *str)
+int	error_exit(char *str)
 {
 	ft_putstr_fd(str, 2);
-	exit(EXIT_FAILURE);
+	return (1);
 }
 
 void	ft_putstr_fd(char *s, int fd)

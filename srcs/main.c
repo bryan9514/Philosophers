@@ -6,7 +6,7 @@
 /*   By: brturcio <brturcio@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 07:41:44 by brturcio          #+#    #+#             */
-/*   Updated: 2025/08/09 12:08:56 by brturcio         ###   ########.fr       */
+/*   Updated: 2025/08/12 12:03:19 by brturcio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	check_empty_value(char **av)
 	while (av[i])
 	{
 		if (av[i][0] == '\0')
-			return (1);
+			return (error_exit("\t\t\t   ⛔ empty value ⛔\n"));
 		i++;
 	}
 	return (0);
@@ -33,20 +33,14 @@ int	main(int ac, char **av)
 
 	tracker = (t_alloc_mgr){0};
 	philo.alloctrack = &tracker;
-	if (check_empty_value(av))
-		error_exit("⛔ empty value ⛔\n");
-	if (!(ac == 6 || ac == 5) || parse_args(ac, av))
+	if (!(ac == 6 || ac == 5) || check_empty_value(av) || parse_args(ac, av))
 	{
 		error_exit(RED "\t\t\t❌ Incorrect input ❌\n "
-			"The sintaxys is:"RST WHT " ./philo 4 800 200 200"RST
-			RED "  or  "RST WHT "./philo 4 800 200 200 5\n"RST);
+			"The sintaxys is:" RST WHT " ./philo 4 800 200 200" RST
+			RED "  or  " RST WHT "./philo 4 800 200 200 5\n" RST);
+		return (EXIT_FAILURE);
 	}
-	if (init_data(&philo, av))
-	{
-		end_rutine(&philo);
-		return (1);
-	}
-	if (init_threads(&philo))
+	if (init_data(&philo, av) || init_threads(&philo))
 	{
 		end_rutine(&philo);
 		return (1);
